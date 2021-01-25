@@ -1,66 +1,77 @@
-# Phase 2 Project
+# Overview
 
-Another module down--you're almost half way there!
+The goal of this project is to look into the King County, Washington housing market from the perspective of a home buyer, potentially a first time home buyer.  Through EDA (exploratory data analysis) and linear regression models, I hope to find the features most relevant to the cost of a home in the King County market. 
 
-![awesome](https://raw.githubusercontent.com/learn-co-curriculum/dsc-phase-2-project-campus/master/halfway-there.gif)
+# Exploration
 
-All that remains in Phase 2 is to put our newfound data science skills to use with a large project! This project should take 20 to 30 hours to complete.
+1. Analyze the housing market in King County, Washington from the data, May 2014-May 2015.  
+2. Research the factors and features that are most relevant to the cost of a home in King County and find out what features have the highest correlation to pricing. 
+3. Build some linear regression models, feed in the relevant features, and see the results of each.  Then, choose the best model based on the results of the data and the transformations done to it. 
 
-## Project Overview
+# Data and methods
+Based on the sourced data of King County, Washington's housing market, we find these as the variables:
 
-For this project, you will use regression modeling to analyze house sales in a northwestern county.
+![vars](Screen.png)
 
-### The Data
+There was a lot of data scrubbing involved due to a multitude of outliers in some key variables:
+* Bathrooms
+* Bedrooms
+* Price
+* Sqft_lot
 
-This project uses the King County House Sales dataset, which can be found in  `kc_house_data.csv` in the data folder in this repo. The description of the column names can be found in `column_names.md` in the same folder. As with most real world data sets, the column names are not perfectly described, so you'll have to do some research or use your best judgment if you have questions about what the data means.
+The box plots for each were as follows, pre-scrubbing:
+**Bedrooms above 5 were dropped**
+![bed](bedroom_outliers.png)
 
-It is up to you to decide what data from this dataset to use and how to use it. If you are feeling overwhelmed or behind, we recommend you ignore some or all of the following features:
+**Prices above 1.5 million were dropped**
+![price](price_outliers.png)
 
-* date
-* view
-* sqft_above
-* sqft_basement
-* yr_renovated
-* zipcode
-* lat
-* long
-* sqft_living15
-* sqft_lot15
+**Bathrooms above 4 were dropped**
+![bath](bathroom_outliers.png)
 
-### Business Problem
+**Sqft_lot above 100,000 were dropped**
+![sqft](sqft_lot_outliers.png)
 
-It is up to you to define a stakeholder and business problem appropriate to this dataset.
+After dropping these outliers, the data was much easier to manage.  
 
-If you are struggling to define a stakeholder, we recommend you complete a project for a real estate agency that helps homeowners buy and/or sell homes. A business problem you could focus on for this stakeholder is the need to provide advice to homeowners about how home renovations might increase the estimated value of their homes, and by what amount.
+I created a heat map to see where there was collinearity:
+![heat](heat_map.png)
 
-## Deliverables
+Then, I made a covariance matrix heat map to find the variables that had the highest correlation to price:
 
-There are three deliverables for this project:
+![covar](covar.png)
 
-* A **GitHub repository**
-* A **Jupyter Notebook**
-* A **non-technical presentation**
+Based on this information, we see that grade, bathrooms, bedrooms, sqft_living and sqft_living15 have the highest correlation to price.  Given that sqft_living and sqft_above have such a collinearity between each other, sqft_above was dropped. 
 
-Review the "Project Submission & Review" page in the "Milestones Instructions" topic for instructions on creating and submitting your deliverables. Refer to the rubric associated with this assignment for specifications describing high-quality deliverables.
+I decided to create a few different models: the first where I didn't transform the data at all and just did a linear regression based on the cleaned data. The second where I standardized the data.  The third where I log-transformed the data. 
 
-### Key Points
 
-* **Your deliverables should explicitly address each step of the data science process.** Refer to [the Data Science Process lesson](https://github.com/learn-co-curriculum/dsc-data-science-processes) from Topic 19 for more information about process models you can use.
 
-* **Your Jupyter Notebook should demonstrate an iterative approach to modeling.** This means that you begin with a basic model, evaluate it, and then provide justification for and proceed to a new model. After you finish refining your models, you should provide 1-3 paragraphs discussing your final model - this should include interpreting at least 3 important parameter estimates or statistics.
+# Results
 
-* **Based on the results of your models, your notebook and presentation should discuss at least two features that have strong relationships with housing prices.**
+The first of my results is a map of longitude and latitude against price of the housing market, where the red dots indicate houses above $1 million and the blue dots indicate under.  The dates are varying darkness of blue and red to show a skew towards the lower and higher end, respectively:
 
-## Getting Started
+![map](map.png)
 
-Start on this project by forking and cloning [this project repository](https://github.com/learn-co-curriculum/dsc-phase-2-project) to get a local copy of the dataset.
+Based on the models, I found with the first model that there was an RMSE (root mean squared error) of about $160,000.  I am using this number because with my best and model, the standardized data model, I also standardized the MSE (mean squared error) and RMSE of the price.  I was able to get an R-squared of .597 with this model and a Jarque-Bera of 100.437.  My QQ plot looked as follows:
 
-We recommend structuring your project repository similar to the structure in [the Phase 1 Project Template](https://github.com/learn-co-curriculum/dsc-project-template). You can do this either by creating a new fork of that repository to work in or by building a new repository from scratch that mimics that structure.
+![qq](mse_and_rmse_of_model_2.png)
 
-## Project Submission and Review
+ 
 
-Review the "Project Submission & Review" page in the "Milestones Instructions" topic to learn how to submit your project and how it will be reviewed. Your project must pass review for you to progress to the next Phase.
 
-## Summary
+# Conclusions
 
-This project will give you a valuable opportunity to develop your data science skills using real-world data. The end-of-phase projects are a critical part of the program because they give you a chance to bring together all the skills you've learned, apply them to realistic projects for a business stakeholder, practice communication skills, and get feedback to help you improve. You've got this!
+Based on the data and models, we see that grade and sqft_living have the highest effect on the price of a home.  Whereas, after a house has 3 or 4 bedrooms, the price begins to tail off. 
+
+The issue I ran into is one mentioned before, where my RMSE and MSE prices were transformed and thus, gave a very small number.  So, given that, I went with the RMSE of the first, non-transformed model. 
+
+
+
+# Next steps
+
+* Gather more data on housing, especially more data on the expensive houses so as to create a better analysis of the overall market. 
+* Develop a new model that standardizes the data, but doesn't perform a transformation on the price that I can't sort out how to reverse without completely re-engineering the model and data.
+* Perform more EDA on the features.  See what's affecting the R-squared values the most. 
+
+
